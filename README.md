@@ -18,3 +18,14 @@ Currently only:
 
 - subscriptions
 - environments
+
+
+## Example
+
+```python
+import pshclient
+PROJECT_ID = 'your_project_id'
+PROJECT_ID = 'some_environment'
+
+data = pshclient.environments(PROJECT_ID, ENVIRONMENT)
+```
