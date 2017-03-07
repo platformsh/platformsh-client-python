@@ -1,19 +1,23 @@
 import requests
 import os
 import json
+import sys
 
 ACCOUNTS_URL = 'https://accounts.platform.sh'
 EU_PLATFORM_URL = 'https://eu.platform.sh'
 US_PLATFORM_URL = 'https://us.platform.sh'
 TOKEN_URL = '/oauth2/token'
-SUBSCRIPTIONS_URL = '/api/platform/subscriptions'
-ENVIRONMENTS_URL = '/api/projects'
 
 class UserError(BaseException):
     pass
 
 if not os.environ.get('PLATFORMSH_API_TOKEN'):
-    raise UserError('Set the $PLATFORMSH_API_TOKEN environment variable')
+    # nothing to see here, just set your env variable
+    sys.tracebacklimit = None
+    raise UserError('Set the $PLATFORMSH_API_TOKEN environment variable.'
+                    ' You can get your API Token under account settings at'
+                    ' https://accounts.platform.sh/user.'
+                    )
 
 def get_session_token(api_token=os.environ.get('PLATFORMSH_API_TOKEN')):
     '''
@@ -39,42 +43,13 @@ def get_session_token(api_token=os.environ.get('PLATFORMSH_API_TOKEN')):
     os.environ['PLATFORMSH_SESSION_TOKEN'] = token
     return token
 
-
-def subscriptions(token=os.environ.get('PLATFORMSH_SESSION_TOKEN'),
-                  method='get', data=None):
-    '''
-    Generic subscriptions endpoint.
-    Takes a session token, and optional method and data.
-    '''
-    return accounts_request(SUBSCRIPTIONS_URL, token, method, data)
-
-
-def environments(project, environment='',
-                 token=os.environ.get('PLATFORMSH_SESSION_TOKEN'), method='get',
-                 data=None):
-    '''
-    Generic environments endpoint.
-    Takes a session token, project_id, and optional method and data.
-    '''
-    path = '/{project}/environments/{environment}'.format(
-        project=project,
-        environment=environment
-    )
-    res = platform_request(
-        ENVIRONMENTS_URL + path,
-        token,
-        method,
-        data,
-    )
-    return res
-
-def accounts_request(endpoint, token, method='get', data=None):
+def accounts_request(endpoint, method='get', data=None):
     '''
     Request to the accounts endpoint.
     '''
-    return base_request(ACCOUNTS_URL + endpoint, token, method, data)
+    return base_request(ACCOUNTS_URL + endpoint, method, data)
 
-def platform_request(endpoint, token, method='get', data=None, region=None):
+def platform_request(endpoint, method='get', data=None, region=None):
     '''
     Request to the platformsh endpoints.
     '''
@@ -83,7 +58,6 @@ def platform_request(endpoint, token, method='get', data=None, region=None):
             # try the US endpoint
             return base_request(
                 US_PLATFORM_URL + endpoint,
-                token,
                 method,
                 data
             )
@@ -91,22 +65,28 @@ def platform_request(endpoint, token, method='get', data=None, region=None):
             # try the EU endpoint
             return base_request(
                 EU_PLATFORM_URL + endpoint,
-                token,
                 method,
                 data
             )
     else:
         raise NotImplementedError
 
-def base_request(url, token, method='get', data=None):
+def base_request(url,
+                 method='get', data=None,
+                 token=os.environ.get('PLATFORMSH_SESSION_TOKEN')):
     '''
     Attempts to revalidate the session token if it fails.
     '''
-    try:
-        return _base_request(url, token, method, data)
-    except:
+    if token is not None:
+        try:
+            return _base_request(url, token, method, data)
+        except:
+            token = get_session_token(os.environ.get('PLATFORMSH_API_TOKEN'))
+            return _base_request(url, token, method, data)
+    else:
         token = get_session_token(os.environ.get('PLATFORMSH_API_TOKEN'))
         return _base_request(url, token, method, data)
+
 
 def _base_request(url, token, method, data):
     '''
@@ -130,8 +110,3 @@ def _base_request(url, token, method, data):
             headers=headers,
         )
     return res.json()
-
-
-if __name__ == "__main__":
-    import sys
-    print(environments('PROJECT_ID', 'ENVIRONMENT'))
