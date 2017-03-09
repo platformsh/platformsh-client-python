@@ -1,7 +1,7 @@
 from .base import *
 
 SUBSCRIPTIONS_URL = '/api/platform/subscriptions'
-ENVIRONMENTS_URL = '/api/projects'
+PROJECTS_URL = '/api/projects'
 
 def subscriptions(method='get', data=None):
     '''
@@ -14,10 +14,20 @@ def subscriptions(method='get', data=None):
         data
     )
 
+def settings(project, method='get', data=None):
+    '''
+    Generic settings endpoint. Takes a session token, project_id,
+    environment name, and optional method and data.
+    '''
+    return platform_request(
+        '{0}/{1}/{2}'.format(PROJECTS_URL, project, 'settings'),
+        method,
+        data
+    )
 
 def environments(project, environment='', method='get', data=None):
     '''
-    Generic environments endpoint. Takes a session token, project_id,
+    Generic environments endpoint. Takes a project_id,
     environment name, and optional method and data.
     '''
     path = '/{project}/environments/{environment}'.format(
@@ -25,15 +35,19 @@ def environments(project, environment='', method='get', data=None):
         environment=environment
     )
     res = platform_request(
-        ENVIRONMENTS_URL + path,
+        PROJECTS_URL + path,
         method,
         data,
     )
     return res
 
-def projects(method='get', data=None):
+def projects(project='', method='get', data=None):
+    '''
+    Generic projects endpoint. Takes a, project_id,
+    environment name, and optional method and data.
+    '''
     return platform_request(
-        ENVIRONMENTS_URL,
+        PROJECTS_URL + '/' + project,
         method,
         data
     )
