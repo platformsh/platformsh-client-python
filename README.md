@@ -18,6 +18,7 @@ Currently only:
 
 - subscriptions
 - environments
+- projects
 
 
 ## Example

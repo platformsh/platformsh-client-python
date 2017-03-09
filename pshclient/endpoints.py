@@ -17,8 +17,8 @@ def subscriptions(method='get', data=None):
 
 def environments(project, environment='', method='get', data=None):
     '''
-    Generic environments endpoint.
-    Takes a session token, project_id, and optional method and data.
+    Generic environments endpoint. Takes a session token, project_id,
+    environment name, and optional method and data.
     '''
     path = '/{project}/environments/{environment}'.format(
         project=project,
@@ -30,3 +30,10 @@ def environments(project, environment='', method='get', data=None):
         data,
     )
     return res
+
+def projects(method='get', data=None):
+    return platform_request(
+        ENVIRONMENTS_URL,
+        method,
+        data
+    )

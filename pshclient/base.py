@@ -71,8 +71,7 @@ def platform_request(endpoint, method='get', data=None, region=None):
     else:
         raise NotImplementedError
 
-def base_request(url,
-                 method='get', data=None,
+def base_request(url, method='get', data=None,
                  token=os.environ.get('PLATFORMSH_SESSION_TOKEN')):
     '''
     Attempts to revalidate the session token if it fails.
