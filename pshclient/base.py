@@ -3,23 +3,23 @@ import os
 import json
 import sys
 
-ACCOUNTS_URL = 'https://accounts.platform.sh'
-EU_PLATFORM_URL = 'https://eu.platform.sh'
-US_PLATFORM_URL = 'https://us.platform.sh'
+ACCOUNTS_URL = 'https://accounts.magento.cloud'
+EU_PLATFORM_URL = 'https://eu.magento.cloud'
+US_PLATFORM_URL = 'https://us.magento.cloud'
 TOKEN_URL = '/oauth2/token'
 
 class UserError(BaseException):
     pass
 
-if not os.environ.get('PLATFORMSH_API_TOKEN'):
+if not os.environ.get('MAGECLOUD_API_TOKEN'):
     # nothing to see here, just set your env variable
     sys.tracebacklimit = None
-    raise UserError('Set the $PLATFORMSH_API_TOKEN environment variable.'
+    raise UserError('Set the $MAGECLOUD_API_TOKEN environment variable.'
                     ' You can get your API Token under account settings at'
-                    ' https://accounts.platform.sh/user.'
+                    ' https://accounts.magento.cloud/user.'
                     )
 
-def get_session_token(api_token=os.environ.get('PLATFORMSH_API_TOKEN')):
+def get_session_token(api_token=os.environ.get('MAGECLOUD_API_TOKEN')):
     '''
     Takes an api token and returns a session token if successful.
     Also caches the session token environment variable.
@@ -34,6 +34,7 @@ def get_session_token(api_token=os.environ.get('PLATFORMSH_API_TOKEN')):
         "grant_type": "api_token",
         "api_token": api_token,
     }
+    import pdb; pdb.set_trace()
     res = requests.post(
         ACCOUNTS_URL + TOKEN_URL,
         headers=headers,
@@ -80,10 +81,10 @@ def base_request(url, method='get', data=None,
         try:
             return _base_request(url, token, method, data)
         except:
-            token = get_session_token(os.environ.get('PLATFORMSH_API_TOKEN'))
+            token = get_session_token(os.environ.get('MAGECLOUD_API_TOKEN'))
             return _base_request(url, token, method, data)
     else:
-        token = get_session_token(os.environ.get('PLATFORMSH_API_TOKEN'))
+        token = get_session_token(os.environ.get('MAGECLOUD_API_TOKEN'))
         return _base_request(url, token, method, data)
 
 
