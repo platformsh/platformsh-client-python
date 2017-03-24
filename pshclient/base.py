@@ -26,23 +26,25 @@ def get_session_token(api_token=os.environ.get('MAGECLOUD_API_TOKEN')):
     Otherwise raises an error.
     '''
     headers = {
-        # cGxhdGZvcm0tY2xpOg== is "platform-cli" in base64
-        "Authorization": "Basic cGxhdGZvcm0tY2xpOg==",
-        "Content-Type":"application/json"
+        # cGxhdGZvcm0tY2xpOg== is "api_token_platform:" in base64
+        "Authorization": "Basic YXBpX3Rva2VuX3BsYXRmb3JtOg==",
+        "Content-Type": "application/json"
     }
     data = {
         "grant_type": "api_token",
         "api_token": api_token,
     }
-    import pdb; pdb.set_trace()
     res = requests.post(
         ACCOUNTS_URL + TOKEN_URL,
         headers=headers,
         data=json.dumps(data),
     )
-    token = res.json()['access_token']
-    os.environ['PLATFORMSH_SESSION_TOKEN'] = token
-    return token
+    try:
+        token = res.json()['access_token']
+        os.environ['PLATFORMSH_SESSION_TOKEN'] = token
+        return token
+    except:
+        return res
 
 def accounts_request(endpoint, method='get', data=None):
     '''

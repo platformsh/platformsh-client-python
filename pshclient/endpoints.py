@@ -1,15 +1,27 @@
 from .base import *
 
 SUBSCRIPTIONS_URL = '/api/platform/subscriptions'
+PROJECT_LOCATOR_URL = '/api/platform/projects'
 PROJECTS_URL = '/api/projects'
 
-def subscriptions(method='get', data=None):
+def subscriptions(subscription_id, method='get', data=None):
     '''
     Generic subscriptions endpoint.
+    Takes a subscription_id, and optional method and data.
+    '''
+    return accounts_request(
+        SUBSCRIPTIONS_URL + '/' + subscription_id,
+        method,
+        data
+    )
+
+def locator(project_id, method='get', data=None):
+    '''
+    Generic subscriptions project endpoint.
     Takes a session token, and optional method and data.
     '''
     return accounts_request(
-        SUBSCRIPTIONS_URL,
+        PROJECT_LOCATOR_URL + '/' + project_id,
         method,
         data
     )
