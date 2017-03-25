@@ -11,13 +11,14 @@ TOKEN_URL = '/oauth2/token'
 class UserError(BaseException):
     pass
 
-if not os.environ.get('MAGECLOUD_API_TOKEN'):
-    # nothing to see here, just set your env variable
-    sys.tracebacklimit = None
-    raise UserError('Set the $MAGECLOUD_API_TOKEN environment variable.'
-                    ' You can get your API Token under account settings at'
-                    ' https://accounts.magento.cloud/user.'
-                    )
+def check_env():
+    if not os.environ.get('MAGECLOUD_API_TOKEN'):
+        # nothing to see here, just set your env variable
+        sys.tracebacklimit = None
+        raise UserError('Set the $MAGECLOUD_API_TOKEN environment variable.'
+                        ' You can get your API Token under account settings at'
+                        ' https://accounts.magento.cloud/user.'
+                        )
 
 def get_session_token(api_token=os.environ.get('MAGECLOUD_API_TOKEN')):
     '''
@@ -25,6 +26,7 @@ def get_session_token(api_token=os.environ.get('MAGECLOUD_API_TOKEN')):
     Also caches the session token environment variable.
     Otherwise raises an error.
     '''
+    check_env()
     headers = {
         # cGxhdGZvcm0tY2xpOg== is "api_token_platform:" in base64
         "Authorization": "Basic YXBpX3Rva2VuX3BsYXRmb3JtOg==",
@@ -79,6 +81,7 @@ def base_request(url, method='get', data=None,
     '''
     Attempts to revalidate the session token if it fails.
     '''
+    check_env()
     if token is not None:
         try:
             return _base_request(url, token, method, data)
@@ -94,6 +97,7 @@ def _base_request(url, token, method, data):
     '''
     Generic authorized request.
     '''
+    check_env()
     headers = {
         "Authorization": "Bearer {}".format(token),
         "Content-Type":"application/json"
