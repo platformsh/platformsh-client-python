@@ -4,6 +4,8 @@
 ### Installation
 
 ```
+git clone https://github.com/platformsh/platformsh-client-python.git
+cd platformsh-client-python
 python setup.py install
 ```
 
