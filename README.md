@@ -16,11 +16,12 @@ Set the `$PLATFORMSH_API_TOKEN` environment variable and then make calls to the 
 
 ### Endpoints
 
-Currently only:
+These should be added in `pshclient/endpoints.py`. Currently only supports:
 
 - subscriptions
 - environments
 - projects
+- settings
 
 
 ## Example
